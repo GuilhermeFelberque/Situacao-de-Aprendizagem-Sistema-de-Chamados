@@ -1,0 +1,39 @@
+%%{init:{'flowchart':{'nodeSpacing':40,'rankSpacing':35,'curve':'basis'}}}%%
+flowchart TD
+    U([Usuário / Solicitante]) --> A[Abertura do chamado]
+    A --> C[Classificação: tipo + categoria]
+    C --> IU[Impacto x Urgência]
+    IU --> P[Prioridade + prazo SLA calculados]
+    P --> M{"Cálculo de encaminhamento<br/>(tipo + pontos)"}
+    M -- "Melhoria" --> N3
+    M -- "Incidente/Bug crítico (7-8 pts)" --> N2
+    M -- "Demais casos" --> N1[N1 - Triagem / Service Desk]
+
+    N1 --> KB{Resolve com base de conhecimento,<br/>procedimento ou suporte remoto?}
+    KB -- Sim --> S[Solução registrada]
+    KB -- "Não: precisa análise técnica" --> N2[N2 - Suporte técnico / Infra]
+    KB -- "Bug de código confirmado" --> N3
+    N1 -. "SLA vencido (automático)" .-> N2
+
+    N2 --> T{Resolve em infra, banco,<br/>configuração ou logs?}
+    T -- Sim --> S
+    T -- "Não: exige alteração de código" --> N3[N3 - Especialista / Desenvolvimento]
+
+    N3 --> R[Correção + Release / Commit / Hotfix obrigatório]
+    R --> S
+
+    S --> V{Solicitante valida?}
+    V -- Aprova --> F([Encerramento - FECHADO])
+    V -- "Reprova com motivo" --> EA[Volta para Em Atendimento<br/>no mesmo nível]
+    EA --> S
+
+
+    F --> H[(Histórico completo de tramitações:<br/>quem, quando, de/para, status)]
+    classDef n1 fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef n2 fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef n3 fill:#fce7f3,stroke:#db2777,color:#831843
+    classDef ok fill:#dcfce7,stroke:#16a34a,color:#14532d
+    class N1 n1
+    class N2 n2
+    class N3,R n3
+    class S,F ok
